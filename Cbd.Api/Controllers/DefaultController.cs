@@ -1,5 +1,4 @@
-﻿using Cbd.Api.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
 namespace Cbd.Api.Controllers;

@@ -1,19 +1,22 @@
 using Cbd.Api.Models;
+using Cbd.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cbd.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class OrderController : ControllerBase
+public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue)
+    : ControllerBase
 {
     [HttpPost("Accept", Name = "AcceptNewOrders")]
-    public async Task Accept([FromBody] Order[] newOrders)
+    public async Task<IActionResult> AcceptAsync([FromBody] Order[] newOrders, CancellationToken cancellationToken)
     {
-        // TODO: 1) insert into a pseudoDB
+        // TODO: insert into a pseudoDB
 
-        // TODO: 2) publish the orders to a queue for further aggregation
+        foreach (var order in newOrders)
+            await createdOrdersQueue.EnqueueOrderAsync(new OrderCreated(order, DateTime.UtcNow), cancellationToken);
 
-        // TODO: 3) return
+        return Ok();
     }
 }
