@@ -2,11 +2,13 @@ using Cbd.Api.Data;
 using Cbd.Api.Models;
 using Cbd.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Cbd.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[EnableRateLimiting("default")]
 public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue, IOrdersRepository ordersRepository)
     : ControllerBase
 {
@@ -21,4 +23,8 @@ public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue, IOr
 
         return Ok();
     }
+
+    [HttpGet("GetAll", Name = "GetAllOrders")]
+    public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken)
+        => await ordersRepository.GetAll(cancellationToken);
 }

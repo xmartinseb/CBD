@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Reflection;
 
 namespace Cbd.Api.Controllers;
 
 [ApiController]
+[EnableRateLimiting("default")]
 public sealed class DefaultController : ControllerBase
 {
     [HttpGet("/", Name = "DefaultPage")]

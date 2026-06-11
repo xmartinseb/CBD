@@ -3,6 +3,8 @@ using Cbd.Api.Configuration;
 using Cbd.Api.Data;
 using Cbd.Api.HostedServices;
 using Cbd.Api.Services;
+using Serilog;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,18 +15,27 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<OrderAggregationTask>();
 builder.Services.AddHostedService<AggregatedOrdersInternalTask>();
+builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("default", httpContext =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 1000,
+            Window = TimeSpan.FromSeconds(10)
+        }));
+});
 
 RegisterOrdersRepository();
 builder.Services.AddSingleton<AggregatedOrdersChannel>();
 builder.Services.AddSingleton<CreatedOrdersChannel>();
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseRateLimiter();
 
 app.UseHttpsRedirection();
 app.UseExceptionHandler();

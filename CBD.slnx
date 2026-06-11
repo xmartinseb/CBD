@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Cbd.Api.IntegrationTests/Cbd.Api.IntegrationTests.csproj" Id="5ba11cbe-509e-48e6-8cbe-2e4b10474bc9" />
   <Project Path="Cbd.Api/Cbd.Api.csproj" />
 </Solution>
