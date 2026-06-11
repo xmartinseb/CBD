@@ -8,6 +8,7 @@ public interface IOrdersRepository
     Task AddAsync(Order o, CancellationToken cancellationToken);
     Task<IReadOnlyList<Order>> GetAll(CancellationToken cancellationToken);
 }
+
 public sealed class InMemoryOrdersRepository : IOrdersRepository
 {
     readonly ConcurrentBag<Order> _orders = [];

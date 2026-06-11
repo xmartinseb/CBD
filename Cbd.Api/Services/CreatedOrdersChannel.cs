@@ -4,9 +4,9 @@ using System.Threading.Channels;
 namespace Cbd.Api.Services;
 
 
-public class CreatedOrdersChannel
+public sealed class CreatedOrdersChannel
 {
-    private Channel<OrderCreated> createdOrdersQueue;
+    Channel<OrderCreated> createdOrdersQueue;
 
     public CreatedOrdersChannel()
     {

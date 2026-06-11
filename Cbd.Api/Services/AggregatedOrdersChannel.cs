@@ -4,9 +4,9 @@ using System.Threading.Channels;
 namespace Cbd.Api.Services;
 
 
-public class AggregatedOrdersChannel
+public sealed class AggregatedOrdersChannel
 {
-    private Channel<AggregatedOrdersCollection> aggregatedOrdersQueue;
+    Channel<AggregatedOrdersCollection> aggregatedOrdersQueue;
 
     public AggregatedOrdersChannel()
     {
