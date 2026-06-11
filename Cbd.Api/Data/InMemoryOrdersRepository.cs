@@ -1,0 +1,32 @@
+﻿using Cbd.Api.Models;
+using System.Collections.Concurrent;
+
+namespace Cbd.Api.Data;
+
+public interface IOrdersRepository
+{
+    Task AddAsync(Order o, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Order>> GetAll(CancellationToken cancellationToken);
+}
+public sealed class InMemoryOrdersRepository : IOrdersRepository
+{
+    readonly ConcurrentBag<Order> _orders = [];
+
+    public Task AddAsync(Order o, CancellationToken cancellationToken)
+    {
+        _orders.Add(o);
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<Order>> GetAll(CancellationToken cancellationToken)
+    {
+        IReadOnlyList<Order> snapshot = [.. _orders];
+        return Task.FromResult(snapshot);
+    }
+}
+
+public sealed class SqlOrdersRepository : IOrdersRepository
+{
+    public Task AddAsync(Order o, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public Task<IReadOnlyList<Order>> GetAll(CancellationToken cancellationToken) => throw new NotImplementedException();
+}
