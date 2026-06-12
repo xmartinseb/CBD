@@ -13,8 +13,11 @@ builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Periodické úlohy: agregace dat a zpracování zagregovaných objednávek
 builder.Services.AddHostedService<OrderAggregationTask>();
 builder.Services.AddHostedService<AggregatedOrdersInternalTask>();
+
 builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
 builder.Services.AddRateLimiter(options =>
 {
@@ -23,12 +26,16 @@ builder.Services.AddRateLimiter(options =>
         partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
         factory: _ => new FixedWindowRateLimiterOptions
         {
-            PermitLimit = 1000,
+            // V produkci  stačí 10, ale kvůli zátěžovému testování nechám pro debug vyšší limit
+            PermitLimit = builder.Environment.IsDevelopment() ? 1000 : 10,
             Window = TimeSpan.FromSeconds(10)
         }));
 });
 
 RegisterOrdersRepository();
+
+// Aplikace využívá asynchronní kanály pro dodávání informací do hosted services, čímž se oddělí logika zpracování objednávek od logiky jejich přijímání a ukládání.
+// Tento mechanismus nijak neošetřuje ztrátu dat (např. při restartu aplikace), ale pro demonstrační účely je zcela dostačující.
 builder.Services.AddSingleton<AggregatedOrdersChannel>();
 builder.Services.AddSingleton<CreatedOrdersChannel>();
 
@@ -43,7 +50,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-
+// Dle konfigurace zaregistruje správný typ repozitáře pro objednávky.
 void RegisterOrdersRepository()
 {
     var repoConfig = builder.Configuration.GetSection("OrdersRepository").Get<OrdersRepositoryConfig>()
@@ -51,12 +58,12 @@ void RegisterOrdersRepository()
 
     switch (repoConfig.RepositoryType)
     {
-        case OrdersRepositoryType.InMemory:
+        case RepoType.InMemory:
             // InMemory drží data v paměti aplikace, proto MUSÍ být Singleton
             builder.Services.AddSingleton<IOrdersRepository, InMemoryOrdersRepository>();
             break;
 
-        case OrdersRepositoryType.Sql:
+        case RepoType.Sql:
             // SQL repozitáře (např. s Entity Frameworkem) typicky vyžadují Scoped životnost
             builder.Services.AddScoped<IOrdersRepository, SqlOrdersRepository>();
             break;

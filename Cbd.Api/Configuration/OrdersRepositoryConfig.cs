@@ -1,11 +1,14 @@
 ﻿namespace Cbd.Api.Configuration;
 
+/// <summary>
+/// Reprezentuje část appsettings.json, která určuje, jaký typ repository se má použít pro ukládání objednávek.
+/// </summary>
 public sealed class OrdersRepositoryConfig
 {
-    public OrdersRepositoryType RepositoryType { get; set; }
+    public RepoType RepositoryType { get; set; }
 }
 
-public enum OrdersRepositoryType
+public enum RepoType
 {
     InMemory, Sql
 }

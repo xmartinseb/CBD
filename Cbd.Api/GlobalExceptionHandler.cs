@@ -3,6 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cbd.Api;
 
+/// <summary>
+/// Globální handler zpracovává chyby z kontroleru a určuje formát vrácené chybové odpovědi. 
+/// V tomto případě vrací standardní chybovou odpověď ve formátu RFC 7807 Problem Details, která obsahuje pouze obecné informace o chybě, ne kritické detaily.
+/// To umožňuje čistý kód v controlleru bez try/catch v každé akci
+/// </summary>
 public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) 
     : IExceptionHandler
 {

@@ -1,5 +1,9 @@
 ﻿namespace Cbd.Api.HostedServices;
 
+/// <summary>
+/// Zaobaluje background service do elegantní periodické úlohy, 
+/// která se spouští v pravidelných intervalech a zpracovává nezachycené výjimky, aby nedošlo k pádu celé úlohy
+/// </summary>
 public abstract class PeriodicTaskBase(ILogger logger) : BackgroundService
 {
     protected abstract TimeSpan Period { get; }

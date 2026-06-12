@@ -9,6 +9,9 @@ public interface IOrdersRepository
     Task<IReadOnlyList<Order>> GetAll(CancellationToken cancellationToken);
 }
 
+/// <summary>
+/// Thread safe in-memory repository, pro ilustraci a testování
+/// </summary>
 public sealed class InMemoryOrdersRepository : IOrdersRepository
 {
     readonly ConcurrentBag<Order> _orders = [];
@@ -26,6 +29,9 @@ public sealed class InMemoryOrdersRepository : IOrdersRepository
     }
 }
 
+/// <summary>
+/// Není implementováno, pouze pro ilustraci
+/// </summary>
 public sealed class SqlOrdersRepository : IOrdersRepository
 {
     public Task AddAsync(Order o, CancellationToken cancellationToken) => throw new NotImplementedException();

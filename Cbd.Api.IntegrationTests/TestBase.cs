@@ -10,7 +10,7 @@ public abstract class TestBase : IClassFixture<WebApplicationFactory<Program>>
 {
     protected readonly HttpClient client;
 
-    protected TestBase(OrdersRepositoryType ordersRepositoryType)
+    protected TestBase(RepoType ordersRepositoryType)
     {
         var factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
@@ -20,10 +20,10 @@ public abstract class TestBase : IClassFixture<WebApplicationFactory<Program>>
                     services.RemoveAll<IOrdersRepository>();
                     switch (ordersRepositoryType)
                     {
-                        case OrdersRepositoryType.InMemory:
+                        case RepoType.InMemory:
                             services.AddSingleton<IOrdersRepository, InMemoryOrdersRepository>();
                             break;
-                        case OrdersRepositoryType.Sql:
+                        case RepoType.Sql:
                             services.AddSingleton<IOrdersRepository, SqlOrdersRepository>();
                             break;
                         default:

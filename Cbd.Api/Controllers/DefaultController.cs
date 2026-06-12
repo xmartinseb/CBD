@@ -8,6 +8,9 @@ namespace Cbd.Api.Controllers;
 [EnableRateLimiting("default")]
 public sealed class DefaultController : ControllerBase
 {
+    /// <summary>
+    /// Defaultní endpoint pro ověření, že API běží
+    /// </summary>
     [HttpGet("/", Name = "DefaultPage")]
     public IActionResult GetDefaultPage()
     {

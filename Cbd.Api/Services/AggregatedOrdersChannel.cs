@@ -3,10 +3,14 @@ using System.Threading.Channels;
 
 namespace Cbd.Api.Services;
 
-
+/// <summary>
+/// Asynchronní kanál pro předávání informací o agregovaných objednávkách.
+/// Tento způsob práce odděluje různé logiky v aplikaci, takže mohou fungovat nezávisle na sobě.
+/// Toto je potřeba registrovat jako singleton
+/// </summary>
 public sealed class AggregatedOrdersChannel
 {
-    Channel<AggregatedOrdersCollection> aggregatedOrdersQueue;
+    readonly Channel<AggregatedOrdersCollection> aggregatedOrdersQueue;
 
     public AggregatedOrdersChannel()
     {
