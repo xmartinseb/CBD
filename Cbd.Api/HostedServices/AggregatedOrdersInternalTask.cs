@@ -17,7 +17,7 @@ public sealed class AggregatedOrdersInternalTask(
         var aggrOrdersCollection = await aggregatedOrders.DequeueOrderAsync(cancellationToken);
 
         if (aggrOrdersCollection.AggregatedOrders.Count == 0)
-            Console.WriteLine($"No aggregated orders at {aggrOrdersCollection.AggregateTimeUtc}");
+            Console.WriteLine($"No new aggregated orders at {aggrOrdersCollection.AggregateTimeUtc}");
         else
         {
             Console.WriteLine(aggrOrdersCollection.ToJson());
