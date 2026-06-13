@@ -14,11 +14,11 @@ public interface IOrdersRepository
 /// </summary>
 public sealed class InMemoryOrdersRepository : IOrdersRepository
 {
-    readonly ConcurrentBag<Order> _orders = [];
+    readonly ConcurrentQueue<Order> _orders = [];
 
     public Task AddAsync(Order o, CancellationToken cancellationToken)
     {
-        _orders.Add(o);
+        _orders.Enqueue(o);
         return Task.CompletedTask;
     }
 

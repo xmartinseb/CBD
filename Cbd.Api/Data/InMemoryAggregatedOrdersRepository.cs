@@ -14,11 +14,11 @@ public interface IAggregatedOrdersRepository
 /// </summary>
 public sealed class InMemoryAggregatedOrdersRepository : IAggregatedOrdersRepository
 {
-    readonly ConcurrentBag<AggregatedOrdersCollection> _collections = [];
+    readonly ConcurrentQueue<AggregatedOrdersCollection> _collections = [];
 
     public Task AddAsync(AggregatedOrdersCollection collection, CancellationToken cancellationToken)
     {
-        _collections.Add(collection);
+        _collections.Enqueue(collection);
         return Task.CompletedTask;
     }
 
