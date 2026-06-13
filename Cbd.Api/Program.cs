@@ -3,6 +3,7 @@ using Cbd.Api.Configuration;
 using Cbd.Api.Data;
 using Cbd.Api.HostedServices;
 using Cbd.Api.Services;
+using Microsoft.OpenApi;
 using Serilog;
 using System.Threading.RateLimiting;
 
@@ -12,7 +13,16 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "CBD API",
+        Version = "v1",
+        Description = "API pro příjem a agregaci objednávek"
+    });
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Cbd.Api.xml"));
+});
 
 // Periodické úlohy: agregace dat a zpracování zagregovaných objednávek
 builder.Services.AddHostedService<OrderAggregationTask>();
@@ -40,8 +50,11 @@ builder.Services.AddSingleton<AggregatedOrdersChannel>();
 builder.Services.AddSingleton<CreatedOrdersChannel>();
 
 var app = builder.Build();
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.UseRateLimiter();
 
 app.UseHttpsRedirection();

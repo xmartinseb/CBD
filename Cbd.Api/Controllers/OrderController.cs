@@ -17,6 +17,8 @@ public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue, IOr
     /// </summary>
     [HttpPost("Accept", Name = "AcceptNewOrders")]
     [ProducesResponseType(200)]
+    [ProducesResponseType(429)]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> AcceptAsync([FromBody] Order[] newOrders, CancellationToken cancellationToken)
     {
         foreach (var order in newOrders)
@@ -43,6 +45,8 @@ public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue, IOr
     /// </summary>
     [HttpGet("GetAll", Name = "GetAllOrders")]
     [ProducesResponseType(typeof(IEnumerable<Order>), 200)]
+    [ProducesResponseType(429)]
+    [ProducesResponseType(500)]
     public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken)
         => await ordersRepository.GetAll(cancellationToken);
 }
