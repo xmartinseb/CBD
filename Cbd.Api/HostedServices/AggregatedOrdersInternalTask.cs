@@ -15,11 +15,13 @@ public sealed class AggregatedOrdersInternalTask(
     protected override async Task MainAsync(CancellationToken cancellationToken)
     {
         var aggrOrdersCollection = await aggregatedOrders.DequeueOrderAsync(cancellationToken);
-        await repository.AddAsync(aggrOrdersCollection, cancellationToken);
 
         if (aggrOrdersCollection.AggregatedOrders.Count == 0)
             Console.WriteLine($"No aggregated orders at {aggrOrdersCollection.AggregateTimeUtc}");
         else
+        {
             Console.WriteLine(aggrOrdersCollection.ToJson());
+            await repository.AddAsync(aggrOrdersCollection, cancellationToken);
+        }
     }
 }
