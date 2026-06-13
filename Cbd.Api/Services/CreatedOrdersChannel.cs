@@ -24,9 +24,6 @@ public sealed class CreatedOrdersChannel
     public ValueTask EnqueueOrderAsync(OrderCreated o, CancellationToken cancellationToken)
         => createdOrdersQueue.Writer.WriteAsync(o, cancellationToken);
 
-    public bool TryPeek(out OrderCreated o)
-        => createdOrdersQueue.Reader.TryPeek(out o);
-
-    public bool TryPop(out OrderCreated o)
+    public bool TryDequeue(out OrderCreated o)
         => createdOrdersQueue.Reader.TryRead(out o);
 }

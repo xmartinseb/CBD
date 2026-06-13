@@ -1,6 +1,5 @@
 ﻿using Cbd.Api.Data;
 using Cbd.Api.Services;
-using Cbd.Api.Tools;
 
 namespace Cbd.Api.HostedServices;
 
@@ -17,11 +16,13 @@ public sealed class AggregatedOrdersInternalTask(
         var aggrOrdersCollection = await aggregatedOrders.DequeueOrderAsync(cancellationToken);
 
         if (aggrOrdersCollection.AggregatedOrders.Count == 0)
-            Console.WriteLine($"No new aggregated orders at {aggrOrdersCollection.AggregateTimeUtc}");
+        {
+            logger.LogDebug("No new aggregated orders at {Time}", aggrOrdersCollection.AggregateTimeUtc);
+        }
         else
         {
-            Console.WriteLine(aggrOrdersCollection.ToJson());
             await repository.AddAsync(aggrOrdersCollection, cancellationToken);
+            logger.LogInformation("Stored aggregation: {Count} products at {Time}", aggrOrdersCollection.AggregatedOrders.Count, aggrOrdersCollection.AggregateTimeUtc);
         }
     }
 }

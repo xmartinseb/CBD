@@ -21,10 +21,11 @@ public sealed class OrderAggregationTask
         var orders = new List<Order>();
         var readUntil = LastRunUtc + Period;
 
-        while (createdOrders.TryPeek(out var nextOrder) && nextOrder.CreatedUtc < readUntil)
+        while (createdOrders.TryDequeue(out var nextOrder))
         {
             orders.Add(nextOrder.Order);
-            createdOrders.TryPop(out _);
+            if (nextOrder.CreatedUtc >= readUntil)
+                break;
         }
 
         return orders;
