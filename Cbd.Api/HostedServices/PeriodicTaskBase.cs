@@ -22,7 +22,7 @@ public abstract class PeriodicTaskBase(ILogger logger) : BackgroundService
                 logger.LogDebug("Starting periodic task {Task}", GetType().Name);
                 await MainAsync(cancellationToken);
             }
-            catch (TaskCanceledException) { throw; }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error in periodic task {Task}", GetType().Name);
