@@ -9,7 +9,11 @@ namespace Cbd.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 [EnableRateLimiting("default")]
-public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue, IOrdersRepository ordersRepository, ILogger<OrderController> logger)
+public sealed class OrderController(
+    CreatedOrdersChannel createdOrdersQueue,
+    IOrdersRepository ordersRepository,
+    IAggregatedOrdersRepository aggregatedOrdersRepository,
+    ILogger<OrderController> logger)
     : ControllerBase
 {
     /// <summary>
@@ -49,4 +53,14 @@ public sealed class OrderController(CreatedOrdersChannel createdOrdersQueue, IOr
     [ProducesResponseType(500)]
     public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken)
         => await ordersRepository.GetAll(cancellationToken);
+
+    /// <summary>
+    /// Vrátí historii všech agregací objednávek
+    /// </summary>
+    [HttpGet("GetAggregated", Name = "GetAggregatedOrders")]
+    [ProducesResponseType(typeof(IEnumerable<AggregatedOrdersCollection>), 200)]
+    [ProducesResponseType(429)]
+    [ProducesResponseType(500)]
+    public async Task<IEnumerable<AggregatedOrdersCollection>> GetAggregatedAsync(CancellationToken cancellationToken)
+        => await aggregatedOrdersRepository.GetAll(cancellationToken);
 }

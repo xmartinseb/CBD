@@ -43,6 +43,7 @@ builder.Services.AddRateLimiter(options =>
 });
 
 RegisterOrdersRepository();
+builder.Services.AddSingleton<IAggregatedOrdersRepository, InMemoryAggregatedOrdersRepository>();
 
 // Aplikace využívá asynchronní kanály pro dodávání informací do hosted services, čímž se oddělí logika zpracování objednávek od logiky jejich přijímání a ukládání.
 // Tento mechanismus nijak neošetřuje ztrátu dat (např. při restartu aplikace), ale pro demonstrační účely je zcela dostačující.
