@@ -21,6 +21,7 @@ public sealed class OrderController(
     /// </summary>
     [HttpPost("Accept", Name = "AcceptNewOrders")]
     [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     [ProducesResponseType(429)]
     [ProducesResponseType(500)]
     public async Task<IActionResult> AcceptAsync([FromBody] Order[] newOrders, CancellationToken cancellationToken)

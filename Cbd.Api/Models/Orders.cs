@@ -1,9 +1,13 @@
-﻿namespace Cbd.Api.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cbd.Api.Models;
 
 /// <summary>Objednávka produktu.</summary>
 /// <param name="ProductId">Identifikátor produktu.</param>
 /// <param name="Quantity">Požadované množství (musí být kladné číslo).</param>
-public sealed record Order(string ProductId, int Quantity);
+public sealed record Order(
+    [property: Required] string ProductId,
+    [property: Range(1, 100000)] int Quantity);
 
 /// <summary>
 /// Záznam o vytvoření objednávky, který se posílá do kanálu pro agregaci objednávek. 
