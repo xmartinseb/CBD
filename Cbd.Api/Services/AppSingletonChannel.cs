@@ -7,16 +7,16 @@ namespace Cbd.Api.Services;
 /// Odděluje logiku produkce a konzumace dat — producent a konzument fungují nezávisle.
 /// Musí být registrován jako singleton.
 /// </summary>
-public sealed class AppChannel<T>
+public sealed class AppSingletonChannel<T>
 {
     readonly Channel<T> _queue;
 
-    public AppChannel()
+    public AppSingletonChannel()
     {
         _queue = Channel.CreateUnbounded<T>(new UnboundedChannelOptions
         {
-            SingleReader = true,
-            SingleWriter = false,
+            SingleReader = true, // Zpracování dat probíhá v jedné hosted service
+            SingleWriter = false, // Může být více http requestů najednou, které generují nová data
         });
     }
 

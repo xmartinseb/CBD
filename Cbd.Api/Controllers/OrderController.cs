@@ -10,7 +10,7 @@ namespace Cbd.Api.Controllers;
 [Route("[controller]")]
 [EnableRateLimiting("default")]
 public sealed class OrderController(
-    AppChannel<OrderCreated> createdOrdersQueue,
+    AppSingletonChannel<OrderCreated> createdOrdersQueue,
     IOrdersRepository ordersRepository,
     IAggregatedOrdersRepository aggregatedOrdersRepository,
     ILogger<OrderController> logger)

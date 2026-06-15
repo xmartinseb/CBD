@@ -6,8 +6,8 @@ using Microsoft.Extensions.Options;
 namespace Cbd.Api.HostedServices;
 
 public sealed class OrderAggregationTask(
-    AppChannel<OrderCreated> createdOrders,
-    AppChannel<AggregatedOrdersCollection> aggregatedOrders,
+    AppSingletonChannel<OrderCreated> createdOrders,
+    AppSingletonChannel<AggregatedOrdersCollection> aggregatedOrders,
     IOptions<PeriodicTasksConfig> config,
     ILogger<OrderAggregationTask> logger)
     : PeriodicTaskBase(logger)

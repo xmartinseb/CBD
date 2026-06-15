@@ -28,7 +28,7 @@ public sealed class InMemoryOrdersRepository : IOrdersRepository
         return Task.FromResult(snapshot);
     }
 }
-
+  
 /// <summary>
 /// Není implementováno, pouze pro ilustraci
 /// </summary>

@@ -49,7 +49,7 @@ s.Configure<PeriodicTasksConfig>(builder.Configuration.GetSection("PeriodicTasks
 
 // Aplikace využívá asynchronní kanály pro dodávání informací do hosted services, čímž se oddělí logika zpracování objednávek od logiky jejich přijímání a ukládání.
 // Tento mechanismus nijak neošetřuje ztrátu dat (např. při restartu aplikace), ale pro demonstrační účely je zcela dostačující.
-s.AddSingleton(typeof(AppChannel<>));
+s.AddSingleton(typeof(AppSingletonChannel<>));
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
