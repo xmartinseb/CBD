@@ -24,12 +24,14 @@ public sealed class OrderAggregationTask(
     List<Order> GetOrders()
     {
         var orders = new List<Order>();
-        var readUntil = LastRunUtc + Period;
-
+        // Je potřeba tu agregaci někde zastavit (ale není třeba přesný deadline). Jde jen o to, aby tento task kontinuálně produkoval nějaké výsledky, i když
+        // by byl zahlcen přísunem mnoha objednávek každou sekundu.
+        var readUntilUtc = LastRunUtc + Period;
+        
         while (createdOrders.TryDequeue(out var nextOrder))
         {
             orders.Add(nextOrder.Order);
-            if (nextOrder.CreatedUtc >= readUntil)
+            if (nextOrder.CreatedUtc >= readUntilUtc)
                 break;
         }
 
