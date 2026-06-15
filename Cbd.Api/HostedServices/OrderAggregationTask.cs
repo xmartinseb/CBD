@@ -1,19 +1,24 @@
-﻿using Cbd.Api.Models;
+﻿using Cbd.Api.Configuration;
+using Cbd.Api.Models;
 using Cbd.Api.Services;
+using Microsoft.Extensions.Options;
 
 namespace Cbd.Api.HostedServices;
 
-public sealed class OrderAggregationTask
-    (CreatedOrdersChannel createdOrders, AggregatedOrdersChannel aggregatedOrders, ILogger<OrderAggregationTask> logger)
+public sealed class OrderAggregationTask(
+    AppChannel<OrderCreated> createdOrders,
+    AppChannel<AggregatedOrdersCollection> aggregatedOrders,
+    IOptions<PeriodicTasksConfig> config,
+    ILogger<OrderAggregationTask> logger)
     : PeriodicTaskBase(logger)
 {
-    protected override TimeSpan Period { get; } = TimeSpan.FromSeconds(20);
+    protected override TimeSpan Period { get; } = config.Value.OrderAggregationPeriod;
 
     protected override async Task MainAsync(CancellationToken cancellationToken)
     {
         var orders = GetOrders();
         var aggrOrders = orders.GroupBy(ord => ord.ProductId).Select(ordGroup => new AggregatedOrder(ordGroup.Key, ordGroup.Sum(ord => ord.Quantity))).ToList();
-        await aggregatedOrders.EnqueueOrderAsync(new AggregatedOrdersCollection(aggrOrders, DateTime.UtcNow), cancellationToken);
+        await aggregatedOrders.EnqueueAsync(new AggregatedOrdersCollection(aggrOrders, DateTime.UtcNow), cancellationToken);
     }
 
     List<Order> GetOrders()

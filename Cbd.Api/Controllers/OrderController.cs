@@ -10,7 +10,7 @@ namespace Cbd.Api.Controllers;
 [Route("[controller]")]
 [EnableRateLimiting("default")]
 public sealed class OrderController(
-    CreatedOrdersChannel createdOrdersQueue,
+    AppChannel<OrderCreated> createdOrdersQueue,
     IOrdersRepository ordersRepository,
     IAggregatedOrdersRepository aggregatedOrdersRepository,
     ILogger<OrderController> logger)
@@ -31,7 +31,7 @@ public sealed class OrderController(
             try
             {
                 await ordersRepository.AddAsync(order, cancellationToken);
-                await createdOrdersQueue.EnqueueOrderAsync(new OrderCreated(order, DateTime.UtcNow), cancellationToken);
+                await createdOrdersQueue.EnqueueAsync(new OrderCreated(order, DateTime.UtcNow), cancellationToken);
                 logger.LogInformation("New order registered: Product {p}, Quantity={q}", order.ProductId, order.Quantity);
             }
             // TODO: zachytit pouze chyby souvisejici s jednim orderem (povolit partial failure).

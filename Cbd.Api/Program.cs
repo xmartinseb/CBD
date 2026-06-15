@@ -8,12 +8,13 @@ using Serilog;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+var s = builder.Services;
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+s.AddExceptionHandler<GlobalExceptionHandler>();
+s.AddProblemDetails();
+s.AddControllers();
+s.AddEndpointsApiExplorer();
+s.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
@@ -25,11 +26,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Periodické úlohy: agregace dat a zpracování zagregovaných objednávek
-builder.Services.AddHostedService<OrderAggregationTask>();
-builder.Services.AddHostedService<AggregatedOrdersInternalTask>();
+s.AddHostedService<OrderAggregationTask>();
+s.AddHostedService<AggregatedOrdersInternalTask>();
 
 builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
-builder.Services.AddRateLimiter(options =>
+s.AddRateLimiter(options =>
 {
     options.AddPolicy("default", httpContext =>
     RateLimitPartition.GetFixedWindowLimiter(
@@ -43,12 +44,12 @@ builder.Services.AddRateLimiter(options =>
 });
 
 RegisterOrdersRepository();
-builder.Services.AddSingleton<IAggregatedOrdersRepository, InMemoryAggregatedOrdersRepository>();
+s.AddSingleton<IAggregatedOrdersRepository, InMemoryAggregatedOrdersRepository>();
+s.Configure<PeriodicTasksConfig>(builder.Configuration.GetSection("PeriodicTasks"));
 
 // Aplikace využívá asynchronní kanály pro dodávání informací do hosted services, čímž se oddělí logika zpracování objednávek od logiky jejich přijímání a ukládání.
 // Tento mechanismus nijak neošetřuje ztrátu dat (např. při restartu aplikace), ale pro demonstrační účely je zcela dostačující.
-builder.Services.AddSingleton<AggregatedOrdersChannel>();
-builder.Services.AddSingleton<CreatedOrdersChannel>();
+s.AddSingleton(typeof(AppChannel<>));
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -74,12 +75,12 @@ void RegisterOrdersRepository()
     {
         case RepoType.InMemory:
             // InMemory drží data v paměti aplikace, proto MUSÍ být Singleton
-            builder.Services.AddSingleton<IOrdersRepository, InMemoryOrdersRepository>();
+            s.AddSingleton<IOrdersRepository, InMemoryOrdersRepository>();
             break;
 
         case RepoType.Sql:
             // SQL repozitáře (např. s Entity Frameworkem) typicky vyžadují Scoped životnost
-            builder.Services.AddScoped<IOrdersRepository, SqlOrdersRepository>();
+            s.AddScoped<IOrdersRepository, SqlOrdersRepository>();
             break;
 
         default:

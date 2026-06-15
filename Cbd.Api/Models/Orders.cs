@@ -23,4 +23,4 @@ public sealed record AggregatedOrder(string ProductId, int Quantity);
 /// <summary>
 /// Obsahuje agregované objednávky pro různé produkty a čas, kdy byla agregace provedena.
 /// </summary>
-public readonly record struct AggregatedOrdersCollection(IReadOnlyList<AggregatedOrder> AggregatedOrders, DateTime AggregateTimeUtc);
+public sealed record AggregatedOrdersCollection(IReadOnlyList<AggregatedOrder> AggregatedOrders, DateTime AggregateTimeUtc);
